@@ -1,5 +1,5 @@
 import { C } from "../core/mod.ts";
-import { applyDoubleCborEncoding, fromHex, toHex } from "../utils/mod.ts";
+import { applyDoubleCborEncoding, nativeScriptFromJson, fromHex, toHex } from "../utils/mod.ts";
 import {
   Address,
   Credential,
@@ -262,8 +262,12 @@ export class Blockfrost implements Provider {
               },
             ).then((res) => res.json());
             // TODO: support native scripts
-            if (type === "Native" || type === "native") {
-              throw new Error("Native script ref not implemented!");
+            if (type === "Native" || type === "native" || type === "timelock") {
+              const { json: script } = await fetch(
+                `${this.url}/scripts/${r.reference_script_hash}/json`,
+                { headers: { project_id: this.projectId, lucid } },
+              ).then((res) => res.json());
+              return nativeScriptFromJson(script);
             }
             const { cbor: script } = await fetch(
               `${this.url}/scripts/${r.reference_script_hash}/cbor`,
