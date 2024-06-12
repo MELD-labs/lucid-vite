@@ -1,8 +1,9 @@
-import packageJson from "./package.json" with { type: "json" };
-import { parse } from "https://deno.land/std@0.185.0/flags/mod.ts";
+import packageJson from "./package.json" assert { type: "json" };
+import * as mod from "https://deno.land/std@0.224.0/cli/mod.ts";
 
-const flags = parse(Deno.args, {
+const flags = mod.parseArgs(Deno.args, {
   boolean: ["npm"],
+  string: ["input", "output"]
 });
 
 type Blueprint = {
@@ -45,7 +46,7 @@ type Blueprint = {
 };
 
 const plutusJson: Blueprint = JSON.parse(
-  await Deno.readTextFile("plutus.json"),
+  await Deno.readTextFile(flags.input ? flags.input : "plutus.json"),
 );
 
 const plutusVersion = "Plutus" +
@@ -108,13 +109,14 @@ const validators = plutusJson.validators.map((validator) => {
 
 const plutus = imports + "\n\n" + validators.join("\n\n");
 
-await Deno.writeTextFile("plutus.ts", plutus);
+const outputFile = flags.output ? flags.output : "plutus.ts"
+await Deno.writeTextFile(outputFile, plutus);
 await new Deno.Command(Deno.execPath(), {
-  args: ["fmt", "plutus.ts"],
+  args: ["fmt", outputFile],
   stderr: "piped",
 }).output();
 console.log(
-  "%cGenerated %cplutus.ts",
+  `%cGenerated %c"${outputFile}"`,
   "color: green; font-weight: bold",
   "font-weight: bold",
 );
