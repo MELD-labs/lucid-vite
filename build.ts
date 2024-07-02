@@ -18,11 +18,6 @@ await dnt.build({
     engines: {
       node: ">=14",
     },
-    dependencies: {
-      "node-fetch": "^3.2.3",
-      "@peculiar/webcrypto": "^1.4.0",
-      "ws": "^8.10.0",
-    },
     main: "./esm/mod.js",
     type: "module",
   },
@@ -96,7 +91,7 @@ if (isNode) {
     if (!globalThis.Headers) globalThis.Headers = fetch.Headers;
     if (!globalThis.Request) globalThis.Request = fetch.Request;
     if (!globalThis.Response) globalThis.Response = fetch.Response;
-    if (!globalThis.fs) globalThis.fs = fs; 
+    if (!globalThis.fs) globalThis.fs = fs;
 }
 
 const C = await (async () => {
