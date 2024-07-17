@@ -54,7 +54,7 @@ const plutusVersion = "Plutus" +
 
 const definitions = plutusJson.definitions;
 
-const imports = `// deno-lint-ignore-file
+const imports = `${ flags.npm ? "// @ts-ignore" : "// deno-lint-ignore-file"}
 import { applyParamsToScript, Data, Validator } from "${
   flags.npm
     ? "lucid-cardano"
