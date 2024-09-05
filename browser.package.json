@@ -1,0 +1,10 @@
+{
+  "module": "./web/mod.js",
+  "types": "./esm/mod.d.ts",
+  "files": [
+    "./web",
+    "./esm/**/*.d.ts",
+    "./esm/src/core/libs/cardano_message_signing/*",
+    "./esm/src/core/libs/cardano_multiplatform_lib/*"
+  ]
+}
