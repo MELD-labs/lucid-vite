@@ -11,4 +11,4 @@ declare global {
 const C = window.DCSpark as typeof DCSParkTypes;
 const M = window.Emurgo as typeof EmurgoTypes;
 
-export { C, M, DCSParkTypes };
+export { C, M };
