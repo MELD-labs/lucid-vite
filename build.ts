@@ -31,43 +31,11 @@ await dnt.build({
 Deno.copyFileSync("LICENSE", "dist/LICENSE");
 Deno.copyFileSync("README.md", "dist/README.md");
 
-// Copy WebAssembly
-
-Deno.copyFileSync(
-  "src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib_bg.wasm",
-  "dist/esm/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib_bg.wasm",
-);
-Deno.copyFileSync(
-  "src/core/libs/cardano_message_signing/cardano_message_signing_bg.wasm",
-  "dist/esm/src/core/libs/cardano_message_signing/cardano_message_signing_bg.wasm",
-);
-
 //** Web ES Module */
 
 const importPathPlugin = {
   name: "core-import-path",
-  setup(build: any) {
-    build.onResolve({
-      filter:
-        /^\.\/libs\/cardano_multiplatform_lib\/cardano_multiplatform_lib.generated.js$/,
-    }, (args: any) => {
-      return {
-        path:
-          "../esm/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib.generated.js",
-        external: true,
-      };
-    });
-    build.onResolve({
-      filter:
-        /^\.\/libs\/cardano_message_signing\/cardano_message_signing.generated.js$/,
-    }, (args: any) => {
-      return {
-        path:
-          "../esm/src/core/libs/cardano_message_signing/cardano_message_signing.generated.js",
-        external: true,
-      };
-    });
-  },
+  setup(build: any) {}
 };
 
 await esbuild.build({
@@ -98,72 +66,5 @@ if (isNode) {
     if (!globalThis.Response) globalThis.Response = fetch.Response;
     if (!globalThis.fs) globalThis.fs = fs; 
 }
-
-const C = await (async () => {
-  try {
-    if (isNode) {
-      return await import(
-        /* webpackIgnore: true */ "./libs/cardano_multiplatform_lib/nodejs/cardano_multiplatform_lib.generated.js"
-      );
-    }
-    return await import(
-      "./libs/cardano_multiplatform_lib/cardano_multiplatform_lib.generated.js"
-    );
-  } catch (_e) {
-    // This only ever happens during SSR rendering
-    return null;
-  }
-})();
-const M = await (async () => {
-  try {
-    if (isNode) {
-      return await import(
-        /* webpackIgnore: true */ "./libs/cardano_message_signing/nodejs/cardano_message_signing.generated.js"
-      );
-    }
-    return await import(
-      "./libs/cardano_message_signing/cardano_message_signing.generated.js"
-    );
-  } catch (_e) {
-    // This only ever happens during SSR rendering
-    return null;
-  }
-})();
-if (!isNode) {
-  async function unsafeInstantiate(module) {
-    try {
-      await module.instantiate();
-    } catch (_e) {
-      // This only ever happens during SSR rendering
-    }
-  }
-  await Promise.all([
-    unsafeInstantiate(C),
-    unsafeInstantiate(M),
-  ]);
-}
-export { C, M };
 `;
 Deno.writeTextFileSync("dist/esm/src/core/core.js", coreFile);
-
-Deno.mkdirSync("dist/esm/src/core/libs/cardano_message_signing/nodejs");
-Deno.mkdirSync("dist/esm/src/core/libs/cardano_multiplatform_lib/nodejs");
-
-Deno.copyFileSync(
-  "src/core/libs/cardano_message_signing/nodejs/cardano_message_signing.generated.js",
-  "dist/esm/src/core/libs/cardano_message_signing/nodejs/cardano_message_signing.generated.js",
-);
-
-Deno.copyFileSync(
-  "src/core/libs/cardano_multiplatform_lib/nodejs/cardano_multiplatform_lib.generated.js",
-  "dist/esm/src/core/libs/cardano_multiplatform_lib/nodejs/cardano_multiplatform_lib.generated.js",
-);
-
-Deno.writeTextFile(
-  "dist/esm/src/core/libs/cardano_message_signing/nodejs/package.json",
-  JSON.stringify({ type: "commonjs" }),
-);
-Deno.writeTextFile(
-  "dist/esm/src/core/libs/cardano_multiplatform_lib/nodejs/package.json",
-  JSON.stringify({ type: "commonjs" }),
-);

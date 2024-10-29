@@ -1,5 +1,5 @@
-import DCSParkTypes from "../types/cardano_multiplatform_lib.generated";
-import EmurgoTypes from "../types/cardano_message_signing.generated";
+import * as DCSParkTypes from "../types/cardano_multiplatform_lib.generated.ts";
+import * as EmurgoTypes from "../types/cardano_message_signing.generated.ts";
 
 declare global {
   interface Window {
@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-const C = window.DCSpark;
-const M = window.Emurgo;
+const C = window.DCSpark as typeof DCSParkTypes;
+const M = window.Emurgo as typeof EmurgoTypes;
 
-export { C, M };
+export { C, M, DCSParkTypes };
